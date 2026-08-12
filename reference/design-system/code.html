@@ -1,0 +1,579 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Hacker Campus - Mission Control</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=Courier+Prime&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#9bfc00",
+                        "on-surface": "#d9e3f2",
+                        "secondary": "#c2c7cd",
+                        "primary-fixed": "#9bfc00",
+                        "surface-tint": "#87dd00",
+                        "background": "#0a141e",
+                        "on-tertiary-fixed": "#131d24",
+                        "secondary-container": "#42474c",
+                        "on-tertiary-fixed-variant": "#3f4851",
+                        "on-primary": "#1e3700",
+                        "error": "#ffb4ab",
+                        "surface-container": "#17202b",
+                        "surface-variant": "#2c3641",
+                        "inverse-primary": "#3e6a00",
+                        "on-secondary": "#2c3135",
+                        "on-background": "#d9e3f2",
+                        "surface-container-highest": "#2c3641",
+                        "on-surface-variant": "#c0cbae",
+                        "outline-variant": "#404a34",
+                        "tertiary-container": "#dae3ee",
+                        "inverse-surface": "#d9e3f2",
+                        "on-secondary-fixed-variant": "#42474c",
+                        "surface-bright": "#303a46",
+                        "secondary-fixed-dim": "#c2c7cd",
+                        "outline": "#8a947a",
+                        "on-secondary-container": "#b1b5bb",
+                        "surface-dim": "#0a141e",
+                        "surface-container-low": "#131c27",
+                        "primary": "#ffffff",
+                        "tertiary-fixed": "#dae3ee",
+                        "surface-container-lowest": "#050f19",
+                        "tertiary-fixed-dim": "#bec7d2",
+                        "surface": "#0a141e",
+                        "on-primary-fixed-variant": "#2e4f00",
+                        "on-tertiary": "#28313a",
+                        "on-error-container": "#ffdad6",
+                        "error-container": "#93000a",
+                        "on-primary-fixed": "#0f2000",
+                        "secondary-fixed": "#dfe3e9",
+                        "on-secondary-fixed": "#171c20",
+                        "on-tertiary-container": "#5c656f",
+                        "on-primary-container": "#427000",
+                        "primary-fixed-dim": "#87dd00",
+                        "inverse-on-surface": "#28313d",
+                        "on-error": "#690005",
+                        "surface-container-high": "#212b36",
+                        "tertiary": "#ffffff",
+                        "level-0": "#090E12",
+                        "level-1": "#0C1217",
+                        "level-1-border": "#151D23",
+                        "level-2": "#10171D",
+                        "level-2-border": "#1C252D",
+                        "accent-primary": "#9DFF00",
+                        "text-primary": "#E9EDF0",
+                        "text-secondary": "#98A2B0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px",
+                        "none": "0px"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "lg": "24px",
+                        "container-max": "1440px",
+                        "gutter": "20px",
+                        "sm": "8px",
+                        "xl": "32px",
+                        "unit": "4px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["IBM Plex Sans"],
+                        "body-lg": ["IBM Plex Sans"],
+                        "headline-sm": ["IBM Plex Sans"],
+                        "mono-md": ["Courier Prime"],
+                        "headline-lg": ["IBM Plex Sans"],
+                        "label-md": ["IBM Plex Sans"],
+                        "body-md": ["IBM Plex Sans"],
+                        "display-lg": ["IBM Plex Sans"],
+                        "headline-md": ["IBM Plex Sans"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "500"}],
+                        "mono-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #090E12;
+            color: #E9EDF0;
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+        .card-module {
+            background-color: #10171D;
+            border: 1px solid #1C252D;
+        }
+        .sub-module {
+            background-color: #0C1217;
+            border: 1px solid #151D23;
+        }
+        .btn-primary {
+            background-color: #9DFF00;
+            color: #090E12;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid #1C252D;
+            color: #E9EDF0;
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover {
+            background-color: #151D23;
+        }
+        .progress-bar-fill {
+            background-color: #9DFF00;
+        }
+        .progress-bar-track {
+            background-color: #151D23;
+        }
+        .text-accent {
+            color: #9DFF00;
+        }
+        .grid-bg {
+            background-image: 
+                linear-gradient(to right, #151D23 1px, transparent 1px),
+                linear-gradient(to bottom, #151D23 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        /* Radar Chart Specific Styles */
+        .radar-poly {
+            fill: rgba(157, 255, 0, 0.2);
+            stroke: #9DFF00;
+            stroke-width: 2;
+        }
+        .radar-grid {
+            fill: none;
+            stroke: #1C252D;
+            stroke-width: 1;
+        }
+        .radar-axis {
+            stroke: #1C252D;
+            stroke-width: 1;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen pb-xl">
+<!-- TopNavBar -->
+<nav class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-lg py-md max-w-container-max mx-auto bg-level-0 border-b border-level-1-border">
+<div class="flex items-center gap-xl">
+<span class="font-headline-md text-headline-md font-bold text-accent-primary">Hacker Campus</span>
+<div class="hidden md:flex items-center gap-md font-body-md text-body-md">
+<a class="text-accent-primary border-b-2 border-accent-primary pb-1" href="#">Dashboard</a>
+<a class="text-text-secondary hover:text-text-primary transition-colors" href="#">Learn</a>
+<a class="text-text-secondary hover:text-text-primary transition-colors" href="#">Practice</a>
+<a class="text-text-secondary hover:text-text-primary transition-colors" href="#">CTF</a>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-text-secondary hover:text-text-primary">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="text-text-secondary hover:text-text-primary">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<img class="w-8 h-8 rounded-full border border-level-1-border object-cover ml-2" data-alt="A small, stylized avatar image of a hacker character, wearing a hoodie in a dark moody lighting setting with neon green rim light. The avatar should have a cybernetic or futuristic aesthetic, emphasizing the cybersecurity theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMuJ7QzGMDFMVIuBxV68l7q0apCr0uwA74KiIDqX8sjioO2EBQQBL1sWPDdIyWsy93_ydALu3FSYDOEl4t7jXdnTrUFyuUwT72E6T7rSOwyeF77qgsOH3UBlR0c-hqOq5sP2x2wJWQ9k8tG1DI4ybYrwKLT9cSvmB-AoVxQFZauFFJ-1AzbU3eNxESLnDmlQxcbi3TKR2vdfF3i7lYdUXdK3hmzrC5bY0A1shAES_VT-r7b2EiObJ0vQ">
+</div>
+</nav>
+<!-- Main Workspace -->
+<main class="max-w-container-max mx-auto px-lg pt-[100px] mt-xl flex flex-col gap-lg">
+<!-- User Header Section -->
+<header class="mb-md">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-md mb-md">
+<div>
+<h1 class="font-display-lg text-display-lg text-text-primary mb-xs">Welcome back, Pavan 👋</h1>
+<p class="font-headline-sm text-headline-sm text-text-secondary">Level 12 Specialist</p>
+</div>
+<div class="w-full md:w-64">
+<div class="flex justify-between text-body-sm font-body-sm text-text-secondary mb-xs">
+<span>XP Progress</span>
+<span class="text-accent-primary">2,450 / 3,000 XP</span>
+</div>
+<div class="h-2 progress-bar-track rounded-full overflow-hidden">
+<div class="h-full progress-bar-fill rounded-full" style="width: 81%;"></div>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap gap-md font-mono-md text-mono-md text-text-secondary">
+<div class="sub-module px-md py-sm rounded-DEFAULT flex items-center gap-sm">
+<span class="text-orange-500">🔥</span> 7 Day Streak
+                </div>
+<div class="sub-module px-md py-sm rounded-DEFAULT flex items-center gap-sm">
+<span class="text-yellow-400">⚡</span> 2,450 XP
+                </div>
+<div class="sub-module px-md py-sm rounded-DEFAULT flex items-center gap-sm">
+<span class="text-blue-400">🏆</span> Rank #1,284
+                </div>
+<div class="sub-module px-md py-sm rounded-DEFAULT flex items-center gap-sm">
+<span class="text-purple-400">🏅</span> 18 Badges
+                </div>
+</div>
+</header>
+<!-- Today's Missions (3 Column Layout) -->
+<section class="card-module p-lg rounded-DEFAULT">
+<div class="flex justify-between items-center mb-md border-b border-level-1-border pb-sm">
+<h2 class="font-label-md text-label-md text-text-secondary uppercase">Today's Missions</h2>
+<span class="font-label-md text-label-md text-text-primary bg-sub-module px-2 py-1 rounded">1 / 3 COMPLETE</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<!-- Daily - Completed -->
+<div class="sub-module p-md rounded-DEFAULT flex flex-col justify-between opacity-60">
+<div class="flex justify-between items-start mb-md">
+<div>
+<p class="font-body-md text-body-md text-text-primary line-through mb-1">Daily Login</p>
+<p class="font-label-md text-label-md text-text-secondary">Log in to Campus</p>
+</div>
+<span class="material-symbols-outlined text-accent-primary">check_circle</span>
+</div>
+<div class="flex justify-between items-center mt-auto">
+<span class="font-label-md text-label-md text-accent-primary">+25 XP</span>
+<span class="font-mono-md text-mono-md text-text-secondary text-[12px]">Completed</span>
+</div>
+</div>
+<!-- Practice -->
+<div class="sub-module p-md rounded-DEFAULT flex flex-col justify-between border-l-2 border-l-accent-primary">
+<div class="flex justify-between items-start mb-md">
+<div>
+<p class="font-body-md text-body-md text-text-primary mb-1">Solve Medium Lab</p>
+<p class="font-label-md text-label-md text-text-secondary">Any category</p>
+</div>
+<span class="material-symbols-outlined text-text-secondary">terminal</span>
+</div>
+<div class="flex justify-between items-center mt-auto">
+<span class="font-label-md text-label-md text-text-secondary">+100 XP</span>
+<button class="btn-secondary px-sm py-1 text-[12px] font-mono-md rounded-DEFAULT flex items-center gap-1">
+                            Start <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Learning -->
+<div class="sub-module p-md rounded-DEFAULT flex flex-col justify-between">
+<div class="flex justify-between items-start mb-md">
+<div>
+<p class="font-body-md text-body-md text-text-primary mb-1">Continue Module</p>
+<p class="font-label-md text-label-md text-text-secondary">Complete 1 lesson</p>
+</div>
+<span class="material-symbols-outlined text-text-secondary">menu_book</span>
+</div>
+<div class="flex justify-between items-center mt-auto">
+<span class="font-label-md text-label-md text-text-secondary">+50 XP</span>
+<button class="btn-secondary px-sm py-1 text-[12px] font-mono-md rounded-DEFAULT flex items-center gap-1">
+                            Continue <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Two Column Layout for Mission and Radar -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column (Wide) -->
+<div class="lg:col-span-8 flex flex-col gap-lg">
+<!-- Continue Your Mission -->
+<section class="card-module p-lg rounded-DEFAULT h-full">
+<div class="flex justify-between items-center mb-md border-b border-level-1-border pb-sm">
+<h2 class="font-label-md text-label-md text-text-secondary uppercase">Continue Your Mission</h2>
+<span class="material-symbols-outlined text-text-secondary text-[18px]">terminal</span>
+</div>
+<div class="mb-lg">
+<h3 class="font-headline-lg text-headline-lg text-text-primary mb-xs">ACTIVE DIRECTORY PENETRATION TESTER</h3>
+<p class="font-body-lg text-body-lg text-text-secondary">Module: Kerberos &amp; Authentication</p>
+</div>
+<div class="flex items-center gap-md mb-lg">
+<div class="w-16 h-16 rounded-full border-2 border-level-1-border flex items-center justify-center relative">
+<svg class="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+<path class="text-level-1-border" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+<path class="text-accent-primary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="68, 100" stroke-width="3"></path>
+</svg>
+<span class="font-headline-sm text-headline-sm text-text-primary">68%</span>
+</div>
+<div class="flex flex-col md:flex-row gap-md flex-1">
+<div class="sub-module p-md rounded-DEFAULT flex-1">
+<div class="font-label-md text-label-md text-text-secondary mb-xs">MODULES</div>
+<div class="font-headline-md text-headline-md">8/12</div>
+</div>
+<div class="sub-module p-md rounded-DEFAULT flex-1">
+<div class="font-label-md text-label-md text-text-secondary mb-xs">LABS</div>
+<div class="font-headline-md text-headline-md">24/35</div>
+</div>
+<div class="sub-module p-md rounded-DEFAULT flex-1">
+<div class="font-label-md text-label-md text-text-secondary mb-xs">TIME SPENT</div>
+<div class="font-headline-md text-headline-md">6h 20m</div>
+</div>
+</div>
+</div>
+<div class="sub-module p-md rounded-DEFAULT flex flex-col sm:flex-row justify-between items-center gap-md mt-auto">
+<div>
+<p class="font-label-md text-label-md text-accent-primary mb-xs uppercase">Next Up</p>
+<p class="font-body-md text-body-md text-text-primary">Kerberos Enumeration <span class="text-text-secondary text-sm ml-2">(Intermediate • 45 min • +150 XP)</span></p>
+</div>
+<button class="btn-primary px-lg py-sm rounded-DEFAULT font-body-sm text-body-sm flex items-center gap-sm w-full sm:w-auto justify-center">
+                            Continue Learning <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</section>
+</div>
+<!-- Right Column: Cyber Skill Radar -->
+<div class="lg:col-span-4 flex flex-col gap-lg">
+<section class="card-module p-lg rounded-DEFAULT h-full">
+<div class="flex justify-between items-center mb-md border-b border-level-1-border pb-sm">
+<h2 class="font-label-md text-label-md text-text-secondary uppercase">Cyber Skill Radar</h2>
+<span class="material-symbols-outlined text-text-secondary text-[18px]">radar</span>
+</div>
+<div class="flex flex-col items-center justify-center relative h-48 mb-md">
+<!-- Simplified SVG Radar Chart -->
+<svg class="w-full h-full max-w-[200px]" height="200" viewBox="0 0 200 200" width="200">
+<!-- Background Grids -->
+<polygon class="radar-grid" points="100,20 176,75 147,163 53,163 24,75"></polygon>
+<polygon class="radar-grid" points="100,40 157,81 135,147 65,147 43,81"></polygon>
+<polygon class="radar-grid" points="100,60 138,87 123,130 77,130 62,87"></polygon>
+<polygon class="radar-grid" points="100,80 119,94 112,115 88,115 81,94"></polygon>
+<!-- Axes -->
+<line class="radar-axis" x1="100" x2="100" y1="100" y2="20"></line>
+<line class="radar-axis" x1="100" x2="176" y1="100" y2="75"></line>
+<line class="radar-axis" x1="100" x2="147" y1="100" y2="163"></line>
+<line class="radar-axis" x1="100" x2="53" y1="100" y2="163"></line>
+<line class="radar-axis" x1="100" x2="24" y1="100" y2="75"></line>
+<!-- Data Polygon (Web, Linux, AD, Cloud, Network) -->
+<!-- Adjusted points to show strengths/weaknesses -->
+<polygon class="radar-poly" points="100,40 150,78 120,140 70,120 40,85"></polygon>
+<!-- Labels (positioned approximately) -->
+<text fill="#98A2B0" font-size="10" text-anchor="middle" x="100" y="15">Web</text>
+<text fill="#98A2B0" font-size="10" text-anchor="start" x="185" y="75">Linux</text>
+<text fill="#98A2B0" font-size="10" text-anchor="start" x="155" y="175">AD</text>
+<text fill="#98A2B0" font-size="10" text-anchor="end" x="45" y="175">Cloud</text>
+<text fill="#98A2B0" font-size="10" text-anchor="end" x="15" y="75">Network</text>
+</svg>
+</div>
+<div class="flex flex-col gap-sm">
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-text-secondary">Strongest Skill:</span>
+<span class="text-accent-primary font-mono-md">Linux (Lvl 8)</span>
+</div>
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-text-secondary">Fastest Growing:</span>
+<span class="text-text-primary font-mono-md">Active Directory</span>
+</div>
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-text-secondary">Needs Practice:</span>
+<span class="text-orange-400 font-mono-md">Cloud Sec</span>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Cyber Journey Timeline -->
+<section class="card-module p-lg rounded-DEFAULT">
+<div class="flex justify-between items-center mb-lg border-b border-level-1-border pb-sm">
+<h2 class="font-label-md text-label-md text-text-secondary uppercase">Cyber Journey Path</h2>
+<span class="material-symbols-outlined text-text-secondary text-[18px]">route</span>
+</div>
+<div class="relative py-md overflow-x-auto">
+<!-- Connecting Line -->
+<div class="absolute top-1/2 left-4 right-4 h-1 bg-level-1-border -translate-y-1/2 z-0 hidden md:block"></div>
+<div class="absolute top-1/2 left-4 w-3/5 h-1 bg-accent-primary -translate-y-1/2 z-0 hidden md:block"></div>
+<div class="flex flex-nowrap md:justify-between min-w-max md:min-w-0 gap-xl relative z-10">
+<!-- Start -->
+<div class="flex flex-col items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-accent-primary text-level-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<span class="font-mono-md text-sm text-text-secondary">Start</span>
+</div>
+<!-- Basics -->
+<div class="flex flex-col items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-accent-primary text-level-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<span class="font-mono-md text-sm text-text-secondary">Basics</span>
+</div>
+<!-- Linux -->
+<div class="flex flex-col items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-accent-primary text-level-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<span class="font-mono-md text-sm text-text-secondary">Linux</span>
+</div>
+<!-- Network -->
+<div class="flex flex-col items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-accent-primary text-level-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<span class="font-mono-md text-sm text-text-secondary">Network</span>
+</div>
+<!-- Web -->
+<div class="flex flex-col items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-accent-primary text-level-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<span class="font-mono-md text-sm text-text-secondary">Web</span>
+</div>
+<!-- Active Directory (Current) -->
+<div class="flex flex-col items-center gap-sm">
+<div class="w-8 h-8 rounded-full border-2 border-accent-primary bg-level-0 text-accent-primary flex items-center justify-center animate-pulse">
+<div class="w-3 h-3 bg-accent-primary rounded-full"></div>
+</div>
+<span class="font-mono-md text-sm text-text-primary font-bold">Active Dir</span>
+</div>
+<!-- Advanced Pentesting -->
+<div class="flex flex-col items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-level-1-border text-text-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+</div>
+<span class="font-mono-md text-sm text-text-secondary">Adv. Pentest</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Two Column Layout for Activity and Achievements -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+<!-- Activity Heatmap -->
+<section class="card-module p-lg rounded-DEFAULT">
+<div class="flex justify-between items-center mb-md border-b border-level-1-border pb-sm">
+<h2 class="font-label-md text-label-md text-text-secondary uppercase">Activity</h2>
+<div class="font-body-sm text-body-sm text-text-secondary">
+<span class="text-text-primary mr-md">28 Active Days</span>
+<span class="text-accent-primary">1,840 XP this month</span>
+</div>
+</div>
+<div class="flex gap-1 overflow-x-auto pb-sm">
+<!-- Simulated Heatmap Grid (Weeks) -->
+<div class="flex flex-col gap-1"><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-[#3e6a00] rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-[#427000] rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-accent-primary opacity-50 rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div></div>
+<div class="flex flex-col gap-1"><div class="w-3 h-3 bg-[#3e6a00] rounded-xs"></div><div class="w-3 h-3 bg-[#427000] rounded-xs"></div><div class="w-3 h-3 bg-accent-primary opacity-80 rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-[#3e6a00] rounded-xs"></div><div class="w-3 h-3 bg-[#427000] rounded-xs"></div></div>
+<div class="flex flex-col gap-1"><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-[#3e6a00] rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-[#427000] rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-accent-primary rounded-xs"></div></div>
+<div class="flex flex-col gap-1"><div class="w-3 h-3 bg-accent-primary opacity-90 rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-[#427000] rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-[#3e6a00] rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div></div>
+<div class="flex flex-col gap-1"><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-[#3e6a00] rounded-xs"></div><div class="w-3 h-3 bg-[#427000] rounded-xs"></div><div class="w-3 h-3 bg-accent-primary opacity-50 rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div></div>
+<div class="flex flex-col gap-1"><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-[#3e6a00] rounded-xs"></div><div class="w-3 h-3 bg-[#427000] rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-accent-primary opacity-50 rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div></div>
+<div class="flex flex-col gap-1"><div class="w-3 h-3 bg-[#3e6a00] rounded-xs"></div><div class="w-3 h-3 bg-[#427000] rounded-xs"></div><div class="w-3 h-3 bg-accent-primary opacity-80 rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-[#3e6a00] rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div></div>
+<div class="flex flex-col gap-1"><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-accent-primary rounded-xs"></div><div class="w-3 h-3 bg-[#3e6a00] rounded-xs"></div><div class="w-3 h-3 bg-[#427000] rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div><div class="w-3 h-3 bg-level-1-border rounded-xs"></div></div>
+</div>
+</section>
+<!-- Recent Achievements -->
+<section class="card-module p-lg rounded-DEFAULT">
+<div class="flex justify-between items-center mb-md border-b border-level-1-border pb-sm">
+<h2 class="font-label-md text-label-md text-text-secondary uppercase">Recent Achievements</h2>
+<span class="material-symbols-outlined text-text-secondary text-[18px]">workspace_premium</span>
+</div>
+<div class="flex gap-md overflow-x-auto pb-sm">
+<div class="flex flex-col items-center gap-xs min-w-[80px]">
+<div class="w-12 h-12 rounded-full bg-[#1e2a38] border border-[#2c3d52] flex items-center justify-center shadow-lg">
+<span class="text-xl">🐧</span>
+</div>
+<span class="font-mono-md text-[11px] text-text-secondary text-center leading-tight">Linux<br>Explorer</span>
+</div>
+<div class="flex flex-col items-center gap-xs min-w-[80px]">
+<div class="w-12 h-12 rounded-full bg-[#381e1e] border border-[#522c2c] flex items-center justify-center shadow-lg">
+<span class="text-xl">🩸</span>
+</div>
+<span class="font-mono-md text-[11px] text-text-secondary text-center leading-tight">First<br>Blood</span>
+</div>
+<div class="flex flex-col items-center gap-xs min-w-[80px]">
+<div class="w-12 h-12 rounded-full bg-[#382b1e] border border-[#52412c] flex items-center justify-center shadow-lg">
+<span class="text-xl">🔥</span>
+</div>
+<span class="font-mono-md text-[11px] text-text-secondary text-center leading-tight">7 Day<br>Streak</span>
+</div>
+<div class="flex flex-col items-center gap-xs min-w-[80px]">
+<div class="w-12 h-12 rounded-full bg-[#1e3825] border border-[#2c5236] flex items-center justify-center shadow-lg">
+<span class="text-xl">🕸️</span>
+</div>
+<span class="font-mono-md text-[11px] text-text-secondary text-center leading-tight">Web<br>Initiate</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Recommended Next Move (Full Width CTA) -->
+<section class="sub-module border border-accent-primary p-lg rounded-DEFAULT flex flex-col md:flex-row justify-between items-center gap-lg bg-[linear-gradient(45deg,transparent_25%,rgba(157,255,0,0.05)_50%,transparent_75%,transparent_100%)] bg-[length:250px_250px]">
+<div>
+<h2 class="font-headline-md text-headline-md text-text-primary mb-xs flex items-center gap-2">
+<span class="material-symbols-outlined text-accent-primary">explore</span> Recommended Next Move
+        </h2>
+<p class="font-body-md text-body-md text-text-secondary max-w-2xl">
+            Based on your skill radar, you're building strong Active Directory knowledge. Level up your enumeration skills to bridge the gap before advancing to cloud security concepts.
+        </p>
+</div>
+<button class="btn-primary px-xl py-md rounded-DEFAULT font-headline-sm text-body-md whitespace-nowrap flex items-center gap-sm">
+        Start AD Enumeration <span class="material-symbols-outlined">rocket_launch</span>
+</button>
+</section>
+</main>
+<footer class="bg-[#080D11] border-t border-[#1C252D] pt-xl pb-lg mt-xl">
+<div class="max-w-container-max mx-auto px-lg">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-xl mb-xl">
+<!-- Logo and Slogan -->
+<div class="lg:col-span-4">
+<div class="font-headline-md text-accent-primary font-bold mb-xs">HACKERS CAMPUS</div>
+<p class="text-text-secondary font-body-md">Learn. Practice. Compete.</p>
+</div>
+<!-- Links Columns -->
+<div class="lg:col-span-5 grid grid-cols-3 gap-md">
+<div>
+<h4 class="font-label-md text-text-primary uppercase mb-md">Platform</h4>
+<ul class="flex flex-col gap-sm font-body-sm text-text-secondary">
+<li><a class="hover:text-accent-primary transition-colors" href="#">Dashboard</a></li>
+<li><a class="hover:text-accent-primary transition-colors" href="#">Academy</a></li>
+<li><a class="hover:text-accent-primary transition-colors" href="#">Labs</a></li>
+<li><a class="hover:text-accent-primary transition-colors" href="#">CTF</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-text-primary uppercase mb-md">Resources</h4>
+<ul class="flex flex-col gap-sm font-body-sm text-text-secondary">
+<li><a class="hover:text-accent-primary transition-colors" href="#">Documentation</a></li>
+<li><a class="hover:text-accent-primary transition-colors" href="#">Community</a></li>
+<li><a class="hover:text-accent-primary transition-colors" href="#">Blog</a></li>
+<li><a class="hover:text-accent-primary transition-colors" href="#">Support</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-text-primary uppercase mb-md">Company</h4>
+<ul class="flex flex-col gap-sm font-body-sm text-text-secondary">
+<li><a class="hover:text-accent-primary transition-colors" href="#">About Us</a></li>
+<li><a class="hover:text-accent-primary transition-colors" href="#">Careers</a></li>
+<li><a class="hover:text-accent-primary transition-colors" href="#">Privacy</a></li>
+<li><a class="hover:text-accent-primary transition-colors" href="#">Terms</a></li>
+</ul>
+</div>
+</div>
+<!-- Socials -->
+<div class="lg:col-span-3">
+<h4 class="font-label-md text-text-primary uppercase mb-md">Follow Hackers Campus</h4>
+<div class="flex flex-wrap gap-md">
+<a class="text-text-secondary hover:text-accent-primary transition-colors" href="#"><span class="material-symbols-outlined">public</span></a>
+<a class="text-text-secondary hover:text-accent-primary transition-colors" href="#"><span class="material-symbols-outlined">video_library</span></a>
+<a class="text-text-secondary hover:text-accent-primary transition-colors" href="#"><span class="material-symbols-outlined">groups</span></a>
+<a class="text-text-secondary hover:text-accent-primary transition-colors" href="#"><span class="material-symbols-outlined">terminal</span></a>
+<a class="text-text-secondary hover:text-accent-primary transition-colors" href="#"><span class="material-symbols-outlined">code</span></a>
+<a class="text-text-secondary hover:text-accent-primary transition-colors" href="#"><span class="material-symbols-outlined">forum</span></a>
+<a class="text-text-secondary hover:text-accent-primary transition-colors" href="#"><span class="material-symbols-outlined">send</span></a>
+</div>
+</div>
+</div>
+<!-- Bottom Bar -->
+<div class="border-t border-[#1C252D] pt-lg flex flex-col md:flex-row justify-between items-center gap-md">
+<p class="text-[#687380] font-body-sm">© 2026 Hackers Campus. All rights reserved.</p>
+<p class="text-[#687380] font-mono-md text-sm">Made for hackers.</p>
+</div>
+</div>
+</footer></body></html>

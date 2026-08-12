@@ -1,0 +1,17 @@
+[project]
+name = "hackers-campus-orchestrator"
+version = "0.1.0"
+description = "Lab runtime orchestrator for Hackers Campus"
+requires-python = ">=3.12"
+dependencies = [
+  "pydantic>=2.10.2",
+  "pydantic-settings>=2.7.0",
+  "redis>=5.2.0"
+]
+
+[tool.uv]
+dev-dependencies = [
+  "pytest>=8.3.4",
+  "ruff>=0.8.2"
+]
+

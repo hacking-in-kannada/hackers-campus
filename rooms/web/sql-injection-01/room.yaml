@@ -1,0 +1,18 @@
+room:
+  id: sql-injection-01
+  title: SQL Injection Basics
+  category: Web Security
+  difficulty: Beginner
+  version: 1.0.0
+
+runtime:
+  type: docker
+
+resources:
+  cpu: 1
+  memory: 512m
+
+session:
+  max_minutes: 90
+  reset_allowed: true
+

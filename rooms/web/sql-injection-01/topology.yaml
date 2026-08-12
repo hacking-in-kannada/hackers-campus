@@ -1,0 +1,12 @@
+network:
+  subnet: 10.100.50.0/24
+  gateway: 10.100.50.1
+
+services:
+  attacker:
+    ip: 10.100.50.2
+  target:
+    ip: 10.100.50.10
+  database:
+    ip: 10.100.50.20
+
