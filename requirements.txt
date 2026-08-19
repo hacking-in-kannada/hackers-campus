@@ -1,0 +1,3 @@
+# Hackers Campus - Python Dependencies
+-r apps/api/requirements.txt
+-r apps/orchestrator/requirements.txt
