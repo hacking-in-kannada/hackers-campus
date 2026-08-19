@@ -4,22 +4,17 @@ import {
   ArrowRight,
   BookOpen,
   Check,
-  Code2,
   Flame,
   Gauge,
-  Globe,
   Lock,
-  MonitorPlay,
   Network,
   Radar,
   Rocket,
   Route as RouteIcon,
   Search,
-  Send,
   Shield,
   Terminal,
   Trophy,
-  Users,
 } from "lucide-react";
 import Link from "next/link";
 import type { Route } from "next";
@@ -129,38 +124,6 @@ const achievements = [
     tone: "bg-[#1e3825] border-[#2c5236] text-emerald-300",
   },
 ];
-
-const footerGroups = [
-  {
-    title: "Platform",
-    links: [
-      { label: "Dashboard", href: "/" },
-      { label: "Learning Paths", href: "/learn/paths" },
-      { label: "Cybersecurity Roadmap", href: "/learn/roadmap" },
-      { label: "Practice Labs", href: "/practice" },
-    ],
-  },
-  {
-    title: "Resources",
-    links: [
-      { label: "Documentation", href: "/learn" },
-      { label: "Community", href: "/learn" },
-      { label: "Blog", href: "/learn" },
-      { label: "Support", href: "/learn" },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      { label: "About Us", href: "/" },
-      { label: "Careers", href: "/" },
-      { label: "Privacy Policy", href: "/" },
-      { label: "Terms of Service", href: "/" },
-    ],
-  },
-];
-
-const socialIcons = [Globe, MonitorPlay, Users, Terminal, Code2, BookOpen, Send];
 
 /* ── Sub-components ────────────────────────────────── */
 
@@ -575,55 +538,6 @@ export function MissionControlDashboard() {
           </section>
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="border-t border-[#1E293B] bg-[#070B14] pb-10 pt-10 text-slate-400">
-        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 md:px-8">
-          <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-12">
-            <div className="lg:col-span-4">
-              <div className="mb-1 text-lg font-bold text-[#22C55E]">HACKERS CAMPUS</div>
-              <p className="text-xs text-slate-400">Learn. Practice. Compete.</p>
-            </div>
-
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 lg:col-span-5">
-              {footerGroups.map((group) => (
-                <div key={group.title}>
-                  <h4 className="mb-3 font-mono text-[11px] uppercase tracking-[0.18em] text-white">
-                    {group.title}
-                  </h4>
-                  <ul className="space-y-2 text-xs text-slate-400">
-                    {group.links.map((link) => (
-                      <li key={link.label}>
-                        <Link href={link.href as Route} className="transition-colors hover:text-[#22C55E]">
-                          {link.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-
-            <div className="lg:col-span-3">
-              <h4 className="mb-3 font-mono text-[11px] uppercase tracking-[0.18em] text-white">
-                Follow Hackers Campus
-              </h4>
-              <div className="flex flex-wrap gap-3 text-slate-400">
-                {socialIcons.map((Icon, index) => (
-                  <span key={index} className="rounded-lg border border-[#1E293B] p-2 hover:border-slate-500 hover:text-white transition">
-                    <Icon size={16} />
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-center justify-between gap-4 border-t border-[#1E293B] pt-6 text-xs md:flex-row text-slate-500 font-mono">
-            <p>© 2026 Hackers Campus. All rights reserved.</p>
-            <p>Made for hackers.</p>
-          </div>
-        </div>
-      </footer>
     </>
   );
 }
