@@ -1,19 +1,9 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans, Courier_Prime } from "next/font/google";
+
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 
 import "./globals.css";
-
-const plexSans = IBM_Plex_Sans({
-  variable: "--font-plex-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"]
-});
-
-const courierPrime = Courier_Prime({
-  variable: "--font-courier-prime",
-  subsets: ["latin"],
-  weight: ["400", "700"]
-});
 
 export const metadata: Metadata = {
   title: "Hackers Campus",
@@ -27,10 +17,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${plexSans.variable} ${courierPrime.variable} font-sans`}>
-        {children}
+      <body className="font-sans min-h-screen bg-canvas flex flex-col text-ink">
+        <Navbar />
+        <main className="flex-1 flex flex-col">{children}</main>
+        <Footer />
       </body>
     </html>
   );
 }
-
