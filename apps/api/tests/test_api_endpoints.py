@@ -46,3 +46,22 @@ def test_api_endpoints() -> None:
     admin_telemetry = client.get("/api/admin/telemetry")
     assert admin_telemetry.status_code == 200
     assert admin_telemetry.json()["active_containers"] == 42
+
+    # Auth registration, login, session
+    reg_resp = client.post(
+        "/api/auth/register",
+        json={"username": "hacker101", "email": "hacker101@sentinel.corp", "password": "SecurePassword123!"},
+    )
+    assert reg_resp.status_code == 201
+    assert "access_token" in reg_resp.json()
+
+    login_resp = client.post(
+        "/api/auth/login",
+        json={"username": "hacker101", "password": "SecurePassword123!"},
+    )
+    assert login_resp.status_code == 200
+    assert login_resp.json()["username"] == "hacker101"
+
+    me_resp = client.get("/api/auth/me")
+    assert me_resp.status_code == 200
+    assert me_resp.json()["username"] == "pavanreddyx7"

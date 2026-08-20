@@ -11,27 +11,57 @@ import {
   Trophy,
 } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useMemo, useState } from "react";
-import { PRACTICE_CHALLENGES } from "@/lib/mock-data";
+import { useEffect, useState } from "react";
+import { mapApiChallenge, type ApiChallenge } from "@/lib/challenges";
+import type { PracticeChallenge } from "@hackers-campus/shared-types";
 import { RoomHeader } from "@/components/room/RoomHeader";
 import { TaskAccordion, type RoomTaskItem } from "@/components/room/TaskAccordion";
 import { RoomChartView } from "@/components/room/RoomChartView";
 import { RoomScoreboardView, RoomWriteupsView } from "@/components/room/RoomScoreboardView";
+import { readSession } from "@/lib/auth";
 
 export default function PracticeChallengeWorkspace() {
   const params = useParams();
   const slug = params?.slug as string;
 
-  const challenge = useMemo(() => {
-    return PRACTICE_CHALLENGES.find((c) => c.slug === slug) || PRACTICE_CHALLENGES[0];
+  const [challenge, setChallenge] = useState<PracticeChallenge | null>(null);
+  const [machineStarting, setMachineStarting] = useState(false);
+  const [machineConnection, setMachineConnection] = useState("");
+  const [machineError, setMachineError] = useState("");
+  const [machineExpiresAt, setMachineExpiresAt] = useState("");
+  const [machineTerminating, setMachineTerminating] = useState(false);
+  useEffect(() => {
+    if (!slug) return;
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api"}/practice/challenges/${slug}`)
+      .then((response) => response.ok ? response.json() : null)
+      .then((data: ApiChallenge | null) => setChallenge(data ? mapApiChallenge(data) : null))
+      .catch(() => setChallenge(null));
   }, [slug]);
+
+  useEffect(() => {
+    if (!challenge) return;
+    const session = readSession();
+    if (!session) return;
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api"}/practice/challenges/${challenge.slug}/machine`, {
+      headers: { Authorization: `Bearer ${session.accessToken}` },
+    }).then(async (response) => {
+      if (!response.ok) return null;
+      return response.json();
+    }).then((data) => {
+      if (!data) return;
+      setMachineConnection(`Target IP: ${data.target_ip}`);
+      setMachineExpiresAt(data.expires_at);
+    }).catch(() => undefined);
+  }, [challenge]);
 
   // Tab State
   const [activeTab, setActiveTab] = useState<"tasks" | "chart" | "scoreboard" | "writeups">("tasks");
 
   // Transform practice challenge tasks into rich TryHackMe RoomTaskItem structure
-  const [tasks, setTasks] = useState<RoomTaskItem[]>(() => {
-    return challenge.tasks.map((t, idx) => ({
+  const [tasks, setTasks] = useState<RoomTaskItem[]>([]);
+  useEffect(() => {
+    if (!challenge) return;
+    setTasks(challenge.tasks.map((t, idx) => ({
       id: t.id,
       taskNumber: idx + 1,
       title: t.title,
@@ -39,6 +69,8 @@ export default function PracticeChallengeWorkspace() {
       content: {
         heading: `Objective 0${idx + 1} · ${t.title}`,
         description: t.description,
+        htmlContent: t.htmlContent,
+        imageAttachment: t.imageAttachment,
         codeSnippets: [
           {
             command: `nmap -sC -sV -p- ${challenge.targetMachine.ip}`,
@@ -65,13 +97,12 @@ export default function PracticeChallengeWorkspace() {
           id: `${t.id}-q1`,
           prompt: `Submit the flag for ${t.title} found on the target system:`,
           placeholder: t.flagFormat || "HC{...}",
-          correctAnswer: t.correctAnswer || "HC{flag_solved}",
           hint: t.hint || undefined,
           xp: t.xp,
         },
       ],
-    }));
-  });
+    })));
+  }, [challenge]);
 
   // Keep track of open accordions (default task 1 open)
   const [openTasks, setOpenTasks] = useState<Record<string, boolean>>({
@@ -88,8 +119,95 @@ export default function PracticeChallengeWorkspace() {
     );
   };
 
+  const handleQuestionCheck = async (_taskId: string, questionId: string, answer: string) => {
+    if (!challenge) return false;
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api"}/practice/submit-flag`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ challenge_id: challenge.id, task_id: questionId.replace(/-q1$/, ""), flag: answer }),
+    });
+    return response.ok && (await response.json()).correct === true;
+  };
+
+  const handleStartMachine = async () => {
+    if (!challenge) return;
+    const session = readSession();
+    if (!session) {
+      setMachineError("Please sign in before starting a machine.");
+      return;
+    }
+    setMachineStarting(true);
+    setMachineError("");
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api"}/practice/challenges/${challenge.slug}/machine/start`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${session.accessToken}` },
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.detail || "Unable to start the machine");
+      setMachineConnection(`Target IP: ${data.target_ip}`);
+      setMachineExpiresAt(data.expires_at);
+    } catch (error) {
+      setMachineError(error instanceof Error ? error.message : "Unable to start the machine");
+    } finally {
+      setMachineStarting(false);
+    }
+  };
+
+  const handleTerminateMachine = async () => {
+    if (!challenge) return;
+    const session = readSession();
+    if (!session) return;
+    setMachineTerminating(true);
+    setMachineError("");
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api"}/practice/challenges/${challenge.slug}/machine`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${session.accessToken}` },
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.detail || "Unable to terminate the machine");
+      }
+      setMachineConnection("");
+      setMachineExpiresAt("");
+    } catch (error) {
+      setMachineError(error instanceof Error ? error.message : "Unable to terminate the machine");
+    } finally {
+      setMachineTerminating(false);
+    }
+  };
+
+  const handleDownloadVpnProfile = async () => {
+    const session = readSession();
+    if (!session) {
+      setMachineError("Please sign in before downloading the VPN profile.");
+      return;
+    }
+    setMachineError("");
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api"}/practice/vpn-profile`, {
+        headers: { Authorization: `Bearer ${session.accessToken}` },
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.detail || "Unable to download the VPN profile");
+      }
+      const blob = await response.blob();
+      const fileUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.download = "hackers-campus.ovpn";
+      link.click();
+      URL.revokeObjectURL(fileUrl);
+    } catch (error) {
+      setMachineError(error instanceof Error ? error.message : "Unable to download the VPN profile");
+    }
+  };
+
   const completedTasksCount = tasks.filter((t) => t.completed).length;
-  const progressPercent = Math.round((completedTasksCount / tasks.length) * 100);
+  const progressPercent = tasks.length ? Math.round((completedTasksCount / tasks.length) * 100) : 0;
+
+  if (!challenge) return <main className="min-h-screen bg-[#090E17] p-10 text-center text-slate-400">Challenge not found or unavailable.</main>;
 
   return (
     <main className="min-h-screen bg-[#090E17] pb-16 text-[#E2E8F0]">
@@ -108,6 +226,14 @@ export default function PracticeChallengeWorkspace() {
           machineName={challenge.targetMachine.hostname}
           category={challenge.category}
           avatarIcon="flame"
+          onStartMachine={handleStartMachine}
+          machineStarting={machineStarting}
+          machineConnection={machineConnection}
+          machineError={machineError}
+          machineExpiresAt={machineExpiresAt}
+          onTerminateMachine={handleTerminateMachine}
+          machineTerminating={machineTerminating}
+          onDownloadVpnProfile={handleDownloadVpnProfile}
         />
 
         {/* 2. Room Navigation Tab Bar (Chart, Tasks, Scoreboard, Writeups) */}
@@ -154,6 +280,7 @@ export default function PracticeChallengeWorkspace() {
                 isOpen={!!openTasks[task.id]}
                 onToggle={() => toggleTask(task.id)}
                 onQuestionSolved={handleQuestionSolved}
+                onQuestionCheck={handleQuestionCheck}
               />
             ))}
           </div>

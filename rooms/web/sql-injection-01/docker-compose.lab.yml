@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  target:
+    build: .
+    image: hackerscampus/sql-injection-01:latest
+    container_name: hc_lab_target_sqli_01
+    ports:
+      - "8081:80"
+    networks:
+      lab_net:
+        ipv4_address: 10.100.50.10
+    restart: unless-stopped
+
+networks:
+  lab_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.100.50.0/24
+          gateway: 10.100.50.1

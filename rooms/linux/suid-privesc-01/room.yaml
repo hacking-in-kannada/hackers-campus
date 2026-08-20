@@ -1,0 +1,17 @@
+room:
+  id: suid-privesc-01
+  title: Linux SUID Binary Escalation
+  category: Linux
+  difficulty: Beginner
+  version: 1.0.0
+
+runtime:
+  type: docker
+
+resources:
+  cpu: 1
+  memory: 512m
+
+session:
+  max_minutes: 60
+  reset_allowed: true

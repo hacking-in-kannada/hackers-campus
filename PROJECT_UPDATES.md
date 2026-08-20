@@ -58,6 +58,20 @@ Hackers Campus has been upgraded into a modern, professional, standard TryHackMe
   - `Certificates`: Verified credentials with modal viewer, PDF download, and credential sharing.
   - `Activity Heatmap`: 365-day color-coded activity matrix.
 
+### 5. 🛠️ Admin Creator Studio & Curriculum Management (`/admin`)
+- **Challenge Creator Studio** (`/admin/builder`):
+  - **Starter Templates**: One-click configuration presets for Web SQLi, Linux SUID Root, Command Injection, and Active Directory Kerberoasting.
+  - **Challenge Image Upload & Download**: Upload architecture diagrams and challenge banners with live preview and download links.
+  - **Rich HTML Tasks**: Toggle between raw HTML code authoring and live rendered preview. Supports `<code>`, `<pre>`, `<ul>`, `<a>`, tables, and inline alerts.
+  - **Downloadable Asset Attachments**: Attach challenge artifacts (`.zip`, `.pcap`, diagram images) directly to individual tasks with 1-click download buttons.
+  - **Roadmap Stage Placement**: Assign challenges to 1. Foundation, 2. Offensive, 3. Defensive, 4. Specialized, or 5. Governance.
+- **Paths, Modules & Roadmap Management** (`/admin/paths`):
+  - Career Learning Path creator (Red Team, Blue Team, Cloud, Web).
+  - Curriculum Module catalog manager with room count and duration tracking.
+  - Interactive Roadmap Stage organizer.
+- **Lab Cluster Telemetry & Pod Management** (`/admin`, `/admin/labs`):
+  - Real-time container session monitor, CPU/RAM telemetry, and 1-click pod termination.
+
 ---
 
 ## 🎨 Design System & Typography
@@ -84,6 +98,13 @@ apps/web/
 │   ├── layout.tsx                                 # Root layout with Navbar & Footer
 │   ├── globals.css                                # Global design tokens & Inter font
 │   ├── page.tsx                                   # Mission Control Dashboard
+│   ├── admin/
+│   │   ├── layout.tsx                             # Admin sidebar layout with status gauge
+│   │   ├── page.tsx                               # Cluster Telemetry & Operations
+│   │   ├── builder/page.tsx                       # Challenge Studio (Templates, HTML, Images)
+│   │   ├── paths/page.tsx                         # Paths, Modules & Roadmap Management
+│   │   ├── labs/page.tsx                          # Live Container Pod Monitor
+│   │   └── users/page.tsx                         # User Directory & Role Management
 │   ├── learn/
 │   │   ├── layout.tsx                             # Learn sub-navigation layout
 │   │   ├── page.tsx                               # Direct render of Learning Paths
@@ -110,7 +131,7 @@ apps/web/
 │   │   └── ChallengeCard.tsx                      # Practice challenge cards
 │   └── room/
 │       ├── RoomHeader.tsx                         # TryHackMe Room Header with AttackBox
-│       ├── TaskAccordion.tsx                      # Task Accordion with flag check
+│       ├── TaskAccordion.tsx                      # Task Accordion with HTML render & flag check
 │       ├── RoomChartView.tsx                      # Solve curve line chart
 │       └── RoomScoreboardView.tsx                 # Scoreboard & Write-ups tabs
 ```

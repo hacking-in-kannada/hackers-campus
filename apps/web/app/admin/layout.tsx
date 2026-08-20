@@ -19,16 +19,32 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { readSession } from "@/lib/auth";
 
 import type { Route } from "next";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [authorized, setAuthorized] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const session = readSession();
+    if (session?.role === "admin") setAuthorized(true);
+    else {
+      setAuthorized(false);
+      router.replace(`/login?next=${encodeURIComponent(pathname || "/admin")}`);
+    }
+  }, [pathname, router]);
+
+  if (authorized !== true) return <div className="min-h-[calc(100vh-72px)] bg-canvas p-10 text-center font-mono text-sm text-muted">Checking access…</div>;
 
   const navItems = [
     { label: "Dashboard", href: "/admin" as Route, icon: LayoutDashboard },
     { label: "Challenge Builder", href: "/admin/builder" as Route, icon: PlusCircle },
+    { label: "Paths & Roadmap", href: "/admin/paths" as Route, icon: FolderTree },
     { label: "Lab Orchestration", href: "/admin/labs" as Route, icon: Server },
     { label: "User Directory", href: "/admin/users" as Route, icon: Users },
   ];

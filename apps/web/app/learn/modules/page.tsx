@@ -25,7 +25,7 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Route } from "next";
 
 interface LearnModule {
@@ -43,177 +43,6 @@ interface LearnModule {
   featured?: boolean;
 }
 
-const LEARN_MODULES: LearnModule[] = [
-  {
-    id: "mod-01",
-    slug: "active-directory-security",
-    category: "Active Directory",
-    title: "Active Directory Security",
-    description:
-      "Explore Windows Domain Controllers, BloodHound graph attacks, Kerberoasting, and ACL privilege escalation in enterprise environments.",
-    difficulty: "Intermediate",
-    lessons: 12,
-    labs: 8,
-    hours: 12,
-    progress: 64,
-    xp: 1500,
-    featured: true,
-  },
-  {
-    id: "mod-02",
-    slug: "linux-fundamentals",
-    category: "Linux",
-    title: "Linux Fundamentals & Shell Scripting",
-    description:
-      "Navigate, manage, and secure Linux systems from the terminal, automate workflows, and exploit basic misconfigurations.",
-    difficulty: "Beginner",
-    lessons: 8,
-    labs: 4,
-    hours: 6,
-    progress: 100,
-    xp: 500,
-  },
-  {
-    id: "mod-03",
-    slug: "windows-fundamentals",
-    category: "Windows",
-    title: "Windows Internals & Administration",
-    description:
-      "Understand Windows architecture, Registry, NTFS permissions, PowerShell automation, and core endpoint telemetry.",
-    difficulty: "Beginner",
-    lessons: 10,
-    labs: 5,
-    hours: 8,
-    progress: 45,
-    xp: 650,
-  },
-  {
-    id: "mod-04",
-    slug: "web-application-basics",
-    category: "Web Security",
-    title: "Web Security & OWASP Top 10",
-    description:
-      "Learn HTTP headers, cookies, authentication bypasses, SQL injection, XSS, and modern API security vulnerabilities.",
-    difficulty: "Beginner",
-    lessons: 9,
-    labs: 6,
-    hours: 9,
-    progress: 0,
-    xp: 800,
-  },
-  {
-    id: "mod-05",
-    slug: "network-enumeration",
-    category: "Network",
-    title: "Network Enumeration & Port Scanning",
-    description:
-      "Discover live hosts, scan services with Nmap, map firewall rules, and capture raw packet streams with Wireshark.",
-    difficulty: "Intermediate",
-    lessons: 7,
-    labs: 7,
-    hours: 10,
-    progress: 0,
-    xp: 900,
-  },
-  {
-    id: "mod-06",
-    slug: "cloud-security-essentials",
-    category: "Cloud Security",
-    title: "Cloud Security & IAM Hardening",
-    description:
-      "Build secure cloud foundations across AWS IAM, S3 bucket policies, container workloads, and Kubernetes clusters.",
-    difficulty: "Intermediate",
-    lessons: 8,
-    labs: 5,
-    hours: 11,
-    progress: 0,
-    xp: 1000,
-  },
-  {
-    id: "mod-07",
-    slug: "soc-foundations",
-    category: "Defense & SOC",
-    title: "SOC Foundations & Alert Triage",
-    description:
-      "Triage SIEM alerts, analyze endpoint forensic artifacts, correlate MITRE ATT&CK techniques, and document incident response cases.",
-    difficulty: "Beginner",
-    lessons: 10,
-    labs: 7,
-    hours: 13,
-    progress: 0,
-    xp: 1100,
-  },
-  {
-    id: "mod-08",
-    slug: "cryptography-foundations",
-    category: "Cryptography",
-    title: "Cryptography & Hash Cracking",
-    description:
-      "Understand symmetric & asymmetric ciphers, hash collisions, RSA fundamentals, and high-speed Hashcat rule crafting.",
-    difficulty: "Beginner",
-    lessons: 6,
-    labs: 5,
-    hours: 7,
-    progress: 0,
-    xp: 600,
-  },
-  {
-    id: "mod-09",
-    slug: "binary-exploitation-basics",
-    category: "Binary Exploitation",
-    title: "x86_64 Stack Binary Exploitation",
-    description:
-      "Decompile 64-bit ELF binaries, compute cyclic buffer overflows, bypass NX via ROP chains, and achieve shellcode execution.",
-    difficulty: "Advanced",
-    lessons: 10,
-    labs: 8,
-    hours: 16,
-    progress: 0,
-    xp: 1800,
-  },
-  {
-    id: "mod-10",
-    slug: "digital-forensics-pcap",
-    category: "Digital Forensics",
-    title: "Network Forensics & Packet Triage",
-    description:
-      "Reconstruct TLS streams, extract exfiltrated files from PCAPs, and trace malicious command-and-control beacons.",
-    difficulty: "Intermediate",
-    lessons: 8,
-    labs: 6,
-    hours: 10,
-    progress: 0,
-    xp: 1150,
-  },
-  {
-    id: "mod-11",
-    slug: "api-security-oauth",
-    category: "Web Security",
-    title: "REST & GraphQL API Security",
-    description:
-      "Exploit Broken Object Level Authorization (BOLA), mass assignment, JWT signature none algorithms, and GraphQL batching.",
-    difficulty: "Intermediate",
-    lessons: 7,
-    labs: 5,
-    hours: 8,
-    progress: 0,
-    xp: 950,
-  },
-  {
-    id: "mod-12",
-    slug: "reverse-engineering-ghidra",
-    category: "Reverse Engineering",
-    title: "Reverse Engineering with Ghidra",
-    description:
-      "Analyze obfuscated x86/x64 assembly, patch control flow graphs, extract hidden encryption keys, and analyze real malware samples.",
-    difficulty: "Advanced",
-    lessons: 11,
-    labs: 9,
-    hours: 18,
-    progress: 0,
-    xp: 2000,
-  },
-];
 
 const CATEGORIES = [
   "All",
@@ -578,6 +407,7 @@ function ModuleCard({ module }: { module: LearnModule }) {
 }
 
 export default function ModulesPage() {
+  const [learnModules, setLearnModules] = useState<LearnModule[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
@@ -586,8 +416,34 @@ export default function ModulesPage() {
   const [showMoreRecommended, setShowMoreRecommended] = useState(false);
   const [feedbackGiven, setFeedbackGiven] = useState<"up" | "down" | null>(null);
 
+  useEffect(() => {
+    const fetchModules = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api"}/curriculum/modules`);
+        if (res.ok) {
+          const data = await res.json();
+          const mapped = data.map((d: any) => ({
+            ...d,
+            category: d.stage === "offensive" ? "Web Security" : d.stage === "defensive" ? "Defense & SOC" : d.stage === "specialized" ? "Cloud Security" : "Linux",
+            difficulty: "Intermediate",
+            lessons: d.roomsCount || 4,
+            labs: d.roomsCount || 4,
+            hours: Math.round((d.estimatedMinutes || 120) / 60),
+            progress: 0,
+            xp: 500,
+            featured: false,
+          }));
+          setLearnModules(mapped);
+        }
+      } catch (err) {
+        console.error("Failed to fetch modules", err);
+      }
+    };
+    fetchModules();
+  }, []);
+
   const filteredModules = useMemo(() => {
-    let result = [...LEARN_MODULES];
+    let result = [...learnModules];
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
@@ -627,27 +483,27 @@ export default function ModulesPage() {
   }, [searchQuery, selectedCategory, selectedDifficulty, selectedStatus, sortBy]);
 
   const recommendedModules = useMemo(() => {
-    const list = LEARN_MODULES.filter((m) => !m.featured);
+    const list = learnModules.filter((m) => !m.featured);
     return showMoreRecommended ? list : list.slice(0, 4);
   }, [showMoreRecommended]);
 
   const osModules = useMemo(() => {
-    return LEARN_MODULES.filter((m) => m.category === "Linux" || m.category === "Windows" || m.category === "Network");
-  }, []);
+    return learnModules.filter((m) => m.category === "Linux" || m.category === "Windows" || m.category === "Network");
+  }, [learnModules]);
 
   const webAndAdModules = useMemo(() => {
-    return LEARN_MODULES.filter((m) => m.category === "Web Security" || m.category === "Active Directory");
-  }, []);
+    return learnModules.filter((m) => m.category === "Web Security" || m.category === "Active Directory");
+  }, [learnModules]);
 
   const defenseAndAdvancedModules = useMemo(() => {
-    return LEARN_MODULES.filter(
+    return learnModules.filter(
       (m) =>
         m.category === "Cloud Security" ||
         m.category === "Defense & SOC" ||
         m.category === "Binary Exploitation" ||
         m.category === "Reverse Engineering"
     );
-  }, []);
+  }, [learnModules]);
 
   const isFiltering =
     searchQuery.trim() !== "" ||

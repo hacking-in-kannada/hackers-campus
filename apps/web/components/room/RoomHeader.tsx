@@ -4,6 +4,7 @@ import {
   Bookmark,
   Check,
   Clock,
+  Download,
   Flame,
   Shield,
   Signal,
@@ -29,6 +30,14 @@ interface RoomHeaderProps {
   machineName?: string;
   category?: string;
   avatarIcon?: string;
+  onStartMachine?: () => void;
+  machineStarting?: boolean;
+  machineConnection?: string;
+  machineError?: string;
+  machineExpiresAt?: string;
+  onTerminateMachine?: () => void;
+  machineTerminating?: boolean;
+  onDownloadVpnProfile?: () => void;
 }
 
 export function RoomHeader({
@@ -44,6 +53,14 @@ export function RoomHeader({
   machineName = "target-box-01",
   category = "Offensive",
   avatarIcon = "flame",
+  onStartMachine,
+  machineStarting = false,
+  machineConnection,
+  machineError,
+  machineExpiresAt,
+  onTerminateMachine,
+  machineTerminating = false,
+  onDownloadVpnProfile,
 }: RoomHeaderProps) {
   const [isSaved, setIsSaved] = useState(false);
   const [recommendCount, setRecommendCount] = useState(595);
@@ -125,6 +142,33 @@ export function RoomHeader({
 
         {/* Action Button Toolbar */}
         <div className="mt-6 flex flex-wrap items-center gap-2.5 pt-4 border-t border-[#1C273C]">
+          {onDownloadVpnProfile && (
+            <button
+              onClick={onDownloadVpnProfile}
+              className="inline-flex items-center gap-2 rounded-lg border border-sky-500/40 bg-sky-500/10 px-3.5 py-2 text-xs font-medium text-sky-300 transition hover:bg-sky-500/20"
+            >
+              <Download size={14} /> <span>Download VPN Profile</span>
+            </button>
+          )}
+          {onStartMachine && (
+            <button
+              onClick={onStartMachine}
+              disabled={machineStarting}
+              className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-xs font-bold text-[#090E12] shadow-md transition hover:bg-emerald-400 disabled:cursor-wait disabled:opacity-60"
+            >
+              <Terminal size={14} />
+              <span>{machineStarting ? "Starting machine…" : machineConnection ? "Machine running" : "Start Machine"}</span>
+            </button>
+          )}
+          {machineConnection && onTerminateMachine && (
+            <button
+              onClick={onTerminateMachine}
+              disabled={machineTerminating}
+              className="inline-flex items-center gap-2 rounded-lg border border-red-500/40 bg-red-500/10 px-3.5 py-2 text-xs font-medium text-red-300 transition hover:bg-red-500/20 disabled:cursor-wait disabled:opacity-60"
+            >
+              <span>{machineTerminating ? "Terminating…" : "Terminate Machine"}</span>
+            </button>
+          )}
           {/* Share Your Achievement Button */}
           <button
             onClick={() => alert("Achievement link copied to clipboard! Share your milestone on LinkedIn and Twitter.")}
@@ -160,6 +204,13 @@ export function RoomHeader({
             <span>{recommendCount} Recommend</span>
           </button>
         </div>
+        {machineConnection && (
+          <div className="mt-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 font-mono text-xs text-emerald-300">
+            Machine ready: {machineConnection}
+            {machineExpiresAt && <span className="ml-3 text-emerald-200/80">Expires: {new Date(machineExpiresAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>}
+          </div>
+        )}
+        {machineError && <p className="mt-3 text-xs text-red-400">{machineError}</p>}
       </div>
 
       {/* Bottom Room Progress Bar */}

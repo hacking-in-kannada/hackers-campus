@@ -12,9 +12,10 @@ import {
   UserRound,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { Route } from "next";
+import { clearSession, readSession, type AuthSession } from "@/lib/auth";
 
 const navItems = [
   { label: "Dashboard", href: "/" as Route },
@@ -24,7 +25,9 @@ const navItems = [
 
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [profileOpen, setProfileOpen] = useState(false);
+  const [session, setSession] = useState<AuthSession | null>(null);
   const profileRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -33,6 +36,13 @@ export function Navbar() {
     };
     document.addEventListener("mousedown", close);
     return () => document.removeEventListener("mousedown", close);
+  }, []);
+
+  useEffect(() => {
+    const updateSession = () => setSession(readSession());
+    updateSession();
+    window.addEventListener("hackers-campus-auth-change", updateSession);
+    return () => window.removeEventListener("hackers-campus-auth-change", updateSession);
   }, []);
 
   return (
@@ -83,7 +93,7 @@ export function Navbar() {
             <Bell size={20} />
             <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-lime animate-pulse" />
           </button>
-          <div className="relative" ref={profileRef}>
+          {session ? <div className="relative" ref={profileRef}>
             <button
               aria-label="Open profile menu"
               aria-expanded={profileOpen}
@@ -107,18 +117,18 @@ export function Navbar() {
                   onClick={() => setProfileOpen(false)}
                   className="block border-b border-divider px-3 py-3 hover:bg-panelSubtle rounded-lg transition"
                 >
-                  <p className="font-semibold text-ink">Pavan Reddy</p>
-                  <p className="font-mono text-xs text-lime">Level 12 · 2,450 XP</p>
+                  <p className="font-semibold text-ink">{session.username}</p>
+                  <p className="font-mono text-xs text-lime">{session.role}</p>
                 </Link>
 
                 <div className="mt-1 space-y-0.5">
-                  <Link
+                  {session.role === "admin" && <Link
                     href="/profile"
                     onClick={() => setProfileOpen(false)}
                     className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-ink transition hover:bg-panelSubtle hover:text-lime"
                   >
                     <UserRound size={16} /> Profile
-                  </Link>
+                  </Link>}
                   <Link
                     href="/settings"
                     onClick={() => setProfileOpen(false)}
@@ -144,8 +154,9 @@ export function Navbar() {
 
                 <button
                   onClick={() => {
-                    alert("Logged out of Hackers Campus.");
+                    clearSession();
                     setProfileOpen(false);
+                    router.push("/login");
                   }}
                   className="mt-1 flex w-full items-center gap-3 border-t border-divider px-3 py-2.5 text-sm text-danger transition hover:text-red-300"
                 >
@@ -153,7 +164,7 @@ export function Navbar() {
                 </button>
               </div>
             )}
-          </div>
+          </div> : <Link href="/login" className="ml-1 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-sm font-semibold text-emerald-400 transition hover:bg-emerald-500 hover:text-slate-950">Sign in</Link>}
         </div>
       </div>
     </nav>

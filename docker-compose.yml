@@ -1,3 +1,18 @@
 include:
   - ./infrastructure/docker/docker-compose.yml
 
+services:
+  api:
+    build:
+      context: ./apps/api
+    environment:
+      DATABASE_URL: postgresql+psycopg://hackers:campus@postgres:5432/hackers_campus
+      REDIS_URL: redis://redis:6379/0
+      API_HOST: 0.0.0.0
+      API_PORT: 8000
+      API_ENV: development
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "8000:8000"

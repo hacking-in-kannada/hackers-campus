@@ -18,7 +18,7 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface LearningPath {
   id: string;
@@ -37,248 +37,25 @@ interface LearningPath {
   featured?: boolean;
 }
 
-const LEARNING_PATHS: LearningPath[] = [
-  {
-    id: "lp-01",
-    slug: "offensive-security-operator",
-    title: "Offensive Security Operator",
-    role: "Offensive track",
-    trackType: "Offensive",
-    description: "Build the attack mindset and hands-on skills needed to launch your career in offensive cybersecurity.",
-    modules: 20,
-    labs: 112,
-    hours: 102,
-    difficulty: "Intermediate",
-    progress: 34,
-    skills: ["Web Exploitation", "Linux PrivEsc", "Active Directory", "Metasploit", "Burp Suite"],
-    enrolled: true,
-    featured: true,
-  },
-  {
-    id: "lp-02",
-    slug: "soc-threat-analyst",
-    title: "SOC Threat Analyst",
-    role: "Defensive track",
-    trackType: "Defensive",
-    description: "Master network traffic analysis, SIEM log triage, endpoint detection, and incident response fundamentals.",
-    modules: 10,
-    labs: 24,
-    hours: 30,
-    difficulty: "Beginner",
-    progress: 20,
-    skills: ["Splunk", "Wireshark", "Suricata", "Incident Response", "MITRE ATT&CK"],
-    enrolled: true,
-  },
-  {
-    id: "lp-03",
-    slug: "cybersecurity-essentials",
-    title: "Cybersecurity Essentials",
-    role: "Foundation track",
-    trackType: "Foundation",
-    description: "The ultimate launchpad. Master Linux CLI, networking protocols, security fundamentals, and cryptographic concepts.",
-    modules: 7,
-    labs: 16,
-    hours: 22,
-    difficulty: "Beginner",
-    progress: 100,
-    skills: ["Linux CLI", "TCP/IP Networking", "HTTP/HTTPS", "Cryptography", "Security+"],
-    enrolled: true,
-  },
-  {
-    id: "lp-04",
-    slug: "web-attack-specialist",
-    title: "Web Attack Specialist",
-    role: "Specialist track",
-    trackType: "Specialist",
-    description: "Deep-dive into OWASP Top 10 vulnerabilities, authentication bypasses, API fuzzing, and modern server-side flaws.",
-    modules: 9,
-    labs: 28,
-    hours: 34,
-    difficulty: "Intermediate",
-    progress: 0,
-    skills: ["OWASP Top 10", "JWT Forgery", "SQLi & XSS", "API Security", "GraphQL"],
-    enrolled: false,
-  },
-  {
-    id: "lp-05",
-    slug: "active-directory-operator",
-    title: "Active Directory Operator",
-    role: "Specialist track",
-    trackType: "Specialist",
-    description: "Attack enterprise Windows domains with Kerberoasting, BloodHound graph analysis, GPO abuse, and forest trust traversal.",
-    modules: 11,
-    labs: 31,
-    hours: 38,
-    difficulty: "Advanced",
-    progress: 0,
-    skills: ["Kerberos TGS", "BloodHound CE", "DCSync", "GPO Hijacking", "Mimikatz"],
-    enrolled: false,
-  },
-  {
-    id: "lp-06",
-    slug: "cloud-security-analyst",
-    title: "Cloud Security Analyst",
-    role: "Specialist track",
-    trackType: "Specialist",
-    description: "Audit and defend modern AWS & Azure cloud infrastructure, container clusters, and IAM policy misconfigurations.",
-    modules: 8,
-    labs: 18,
-    hours: 26,
-    difficulty: "Intermediate",
-    progress: 0,
-    skills: ["AWS IAM", "Kubernetes RBAC", "S3 Hardening", "CloudTrail", "Terraform"],
-    enrolled: false,
-  },
-  {
-    id: "lp-07",
-    slug: "cyber-defense-responder",
-    title: "Cyber Defense & Incident Responder",
-    role: "Defensive track",
-    trackType: "Defensive",
-    description: "Perform memory forensics, disk artifact inspection, malware reverse triage, and threat hunting.",
-    modules: 9,
-    labs: 22,
-    hours: 28,
-    difficulty: "Intermediate",
-    progress: 0,
-    skills: ["Volatility", "Autopsy", "Memory Forensics", "Sigma Rules", "Threat Hunting"],
-    enrolled: false,
-  },
-  {
-    id: "lp-08",
-    slug: "red-team-adversary",
-    title: "Red Team Adversary Emulation",
-    role: "Offensive track",
-    trackType: "Offensive",
-    description: "Emulate advanced persistent threats (APT), build custom C2 implants, bypass EDR hooks, and maintain long-term persistence.",
-    modules: 14,
-    labs: 40,
-    hours: 55,
-    difficulty: "Advanced",
-    progress: 0,
-    skills: ["C2 Infrastructure", "EDR Evasion", "Process Injection", "DLL Sideloading", "Cobalt Strike"],
-    enrolled: false,
-  },
-];
-
-function PathAvatar({ trackType }: { trackType: LearningPath["trackType"] }) {
-  if (trackType === "Offensive") return (
-    <div className="flex h-11 w-11 items-center justify-center rounded-full border border-red-500/30 bg-red-950/40 p-2">
-      <Crosshair className="h-6 w-6 text-red-400" />
-    </div>
-  );
-  if (trackType === "Defensive") return (
-    <div className="flex h-11 w-11 items-center justify-center rounded-full border border-sky-500/30 bg-sky-950/40 p-2">
-      <Shield className="h-6 w-6 text-sky-400" />
-    </div>
-  );
-  if (trackType === "Foundation") return (
-    <div className="flex h-11 w-11 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-950/40 p-2">
-      <BookOpen className="h-6 w-6 text-emerald-400" />
-    </div>
-  );
-  return (
-    <div className="flex h-11 w-11 items-center justify-center rounded-full border border-purple-500/30 bg-purple-950/40 p-2">
-      <Network className="h-6 w-6 text-purple-400" />
-    </div>
-  );
-}
-
 function PathCard({ path }: { path: LearningPath }) {
-  const isStarted = path.progress > 0 && path.progress < 100;
-  const isComplete = path.progress === 100;
-
-  const difficultyColors = {
-    Beginner: "text-[#22C55E]",
-    Intermediate: "text-[#F59E0B]",
-    Advanced: "text-[#EF4444]",
-  };
-
   return (
-    <div className="group relative flex h-full flex-col justify-between rounded-xl border border-[#1E293B] bg-[#0C1322] p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-slate-600 hover:shadow-lg hover:shadow-emerald-950/20">
-      <div>
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1">
-            <span className="font-mono text-[10px] uppercase tracking-wider text-emerald-400 font-semibold">
-              {path.role}
-            </span>
-            <Link
-              href={`/learn/paths/${path.slug}`}
-              className="mt-1 block text-base font-bold text-white transition-colors group-hover:text-emerald-400 line-clamp-1"
-            >
-              {path.title}
-            </Link>
-            <p className="mt-1 text-xs text-slate-400 line-clamp-2">{path.description}</p>
-          </div>
-          <div className="shrink-0"><PathAvatar trackType={path.trackType} /></div>
-        </div>
-
-        {/* 3-Column Metrics */}
-        <div className="mt-4 grid grid-cols-3 divide-x divide-[#1E293B] rounded-lg border border-[#1E293B] bg-[#080E1A] py-2 text-center text-xs">
-          <div>
-            <p className="font-bold text-white">{path.modules}</p>
-            <p className="text-[10px] text-slate-400">Modules</p>
-          </div>
-          <div>
-            <p className="font-bold text-white">{path.labs}</p>
-            <p className="text-[10px] text-slate-400">Labs</p>
-          </div>
-          <div>
-            <p className="font-bold text-white">{path.hours}h</p>
-            <p className="text-[10px] text-slate-400">Duration</p>
-          </div>
-        </div>
-
-        {/* Skills */}
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {path.skills.slice(0, 3).map((skill) => (
-            <span key={skill} className="rounded bg-[#1E293B]/70 px-2 py-0.5 font-mono text-[10px] text-slate-300">
-              {skill}
-            </span>
-          ))}
-          {path.skills.length > 3 && (
-            <span className="rounded bg-[#1E293B]/40 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
-              +{path.skills.length - 3}
-            </span>
-          )}
-        </div>
+    <Link href={`/learn/paths/${path.slug}`} className="group rounded-xl border border-[#1E293B] bg-[#0C1322] p-5 transition hover:border-emerald-500/50 hover:bg-[#0F1B30]">
+      <div className="flex items-start justify-between gap-3">
+        <span className="rounded border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 font-mono text-[10px] font-bold uppercase text-emerald-400">{path.trackType}</span>
+        <span className="text-xs font-medium text-amber-400">{path.difficulty}</span>
       </div>
-
-      {/* Progress + CTA */}
-      <div className="mt-5 border-t border-[#1C273A] pt-3.5">
-        <div className="mb-2 flex items-center justify-between text-xs font-mono">
-          <span className={path.progress ? "text-emerald-400 font-semibold" : "text-slate-400"}>
-            {isComplete ? "Completed" : path.progress ? `${path.progress}% complete` : "Not enrolled"}
-          </span>
-          <span className={difficultyColors[path.difficulty]}>{path.difficulty}</span>
-        </div>
-
-        <div className="mb-4 h-1.5 overflow-hidden rounded-full bg-[#1E293B]">
-          <div
-            className="h-full bg-[#22C55E] transition-all duration-500"
-            style={{ width: `${path.progress}%` }}
-          />
-        </div>
-
-        <Link
-          href={`/learn/paths/${path.slug}`}
-          className={`flex w-full items-center justify-center gap-2 rounded-lg py-2 text-xs font-bold transition ${
-            isStarted
-              ? "bg-[#22C55E] text-[#090E12] hover:bg-[#4ADE80]"
-              : isComplete
-              ? "border border-slate-700 bg-slate-800 text-white hover:border-slate-500"
-              : "border border-slate-700 bg-[#0C1322] text-white hover:border-[#22C55E] hover:text-[#22C55E]"
-          }`}
-        >
-          <span>{isComplete ? "Review Path" : isStarted ? "Continue Path" : "Enroll in Path"}</span>
-          <ArrowRight size={14} />
-        </Link>
+      <h3 className="mt-4 text-base font-bold text-white group-hover:text-emerald-400">{path.title}</h3>
+      <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-slate-400">{path.description}</p>
+      <div className="mt-4 flex items-center justify-between border-t border-[#1E293B] pt-3 text-xs text-slate-400">
+        <span>{path.modules} modules · {path.labs} labs</span>
+        <span className="inline-flex items-center gap-1 text-emerald-400">View path <ArrowRight size={12} /></span>
       </div>
-    </div>
+    </Link>
   );
 }
 
 export default function PathsPage() {
+  const [learningPaths, setLearningPaths] = useState<LearningPath[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTrack, setSelectedTrack] = useState("all");
   const [selectedDifficulty, setSelectedDifficulty] = useState("all");
@@ -286,8 +63,35 @@ export default function PathsPage() {
   const [sortBy, setSortBy] = useState("recommended");
   const [feedbackGiven, setFeedbackGiven] = useState<"up" | "down" | null>(null);
 
+  useEffect(() => {
+    const fetchPaths = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api"}/curriculum/paths`);
+        if (res.ok) {
+          const data = await res.json();
+          // Map backend data to frontend interface
+          const mapped = data.map((d: any) => ({
+            ...d,
+            role: d.category,
+            trackType: d.category === "Red Team" ? "Offensive" : d.category === "Blue Team" ? "Defensive" : d.category === "Cloud" ? "Specialist" : "Foundation",
+            modules: d.modules?.length || 0,
+            labs: d.modules?.reduce((acc: number, m: any) => acc + (m.roomsCount || 0), 0) || 0,
+            hours: d.estimated_hours || 40,
+            progress: 0,
+            skills: ["Linux", "Networking"],
+            enrolled: false,
+          }));
+          setLearningPaths(mapped);
+        }
+      } catch (err) {
+        console.error("Failed to fetch paths", err);
+      }
+    };
+    fetchPaths();
+  }, []);
+
   const filteredPaths = useMemo(() => {
-    let result = [...LEARNING_PATHS];
+    let result = [...learningPaths];
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(
@@ -303,7 +107,7 @@ export default function PathsPage() {
     else if (sortBy === "duration") result.sort((a, b) => a.hours - b.hours);
     else if (sortBy === "progress") result.sort((a, b) => b.progress - a.progress);
     return result;
-  }, [searchQuery, selectedTrack, selectedDifficulty, selectedStatus, sortBy]);
+  }, [learningPaths, searchQuery, selectedTrack, selectedDifficulty, selectedStatus, sortBy]);
 
   const isFiltering = searchQuery.trim() !== "" || selectedTrack !== "all" || selectedDifficulty !== "all" || selectedStatus !== "all" || sortBy !== "recommended";
 
@@ -312,11 +116,11 @@ export default function PathsPage() {
     setSelectedStatus("all"); setSortBy("recommended");
   };
 
-  const offensivePaths = LEARNING_PATHS.filter((p) => p.trackType === "Offensive");
-  const defensivePaths = LEARNING_PATHS.filter((p) => p.trackType === "Defensive");
-  const specialistPaths = LEARNING_PATHS.filter((p) => p.trackType === "Specialist" || p.trackType === "Foundation");
-  const featuredPath = LEARNING_PATHS.find((p) => p.featured);
-  const otherPaths = LEARNING_PATHS.filter((p) => !p.featured).slice(0, 4);
+  const offensivePaths = learningPaths.filter((p) => p.trackType === "Offensive");
+  const defensivePaths = learningPaths.filter((p) => p.trackType === "Defensive");
+  const specialistPaths = learningPaths.filter((p) => p.trackType === "Specialist" || p.trackType === "Foundation");
+  const featuredPath = learningPaths.find((p) => p.featured);
+  const otherPaths = learningPaths.filter((p) => !p.featured).slice(0, 4);
 
   return (
     <div className="w-full space-y-10">

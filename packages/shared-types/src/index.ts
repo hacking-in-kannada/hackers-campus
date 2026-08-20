@@ -54,6 +54,8 @@ export interface PracticeChallenge {
   scenario: string;
   prerequisites: string[];
   skillsTested: string[];
+  imageUrl?: string;
+  imageFileName?: string;
   attackMachine: {
     hostname: string;
     ip: string;
@@ -74,6 +76,7 @@ export interface ChallengeTask {
   taskNumber: string;
   title: string;
   description: string;
+  htmlContent?: string;
   hint?: string;
   hintCost: number;
   xp: number;
@@ -82,6 +85,11 @@ export interface ChallengeTask {
   flagFormat?: string;
   correctAnswer?: string;
   options?: string[];
+  imageAttachment?: {
+    name: string;
+    url: string;
+    size: string;
+  };
 }
 
 export interface CTFEvent {
@@ -231,18 +239,80 @@ export interface ChallengeDraft {
   estimatedMinutes: number;
   baseXp: number;
   image: string;
+  imageUrl?: string;
+  imageFileName?: string;
   containerImage: string;
   cpuCores: number;
   ramMb: number;
   targetPorts: string;
+  roadmapStage?: "foundation" | "offensive" | "defensive" | "specialized" | "governance";
+  moduleId?: string;
   tasks: Array<{
     title: string;
     description: string;
+    htmlContent?: string;
     flag: string;
     hint: string;
     xp: number;
+    imageAttachment?: {
+      name: string;
+      url: string;
+      size: string;
+    };
   }>;
   visibility: "draft" | "published" | "scheduled";
   isPremium: boolean;
   version: string;
+}
+
+export interface ChallengeTemplate {
+  id: string;
+  name: string;
+  category: ChallengeCategory;
+  difficulty: ChallengeDifficulty;
+  runtime: "docker" | "virtualbox";
+  containerImage: string;
+  targetPorts: string;
+  description: string;
+  sampleTask: {
+    title: string;
+    description: string;
+    htmlContent: string;
+    flag: string;
+    hint: string;
+    xp: number;
+  };
+}
+
+export interface LearningPathDraft {
+  id: string;
+  slug: string;
+  title: string;
+  tagline: string;
+  category: "Red Team" | "Blue Team" | "Cloud" | "Web" | "General";
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
+  estimatedHours: number;
+  prerequisites: string[];
+  careerRoles: string[];
+  description: string;
+  stagesCount: number;
+  modules: Array<{
+    id: string;
+    title: string;
+    roomsCount: number;
+    estimatedMinutes: number;
+  }>;
+}
+
+export interface ModuleDraft {
+  id: string;
+  slug: string;
+  title: string;
+  category: "foundation" | "offensive" | "defensive" | "specialized" | "governance";
+  iconName: string;
+  description: string;
+  stage: string;
+  estimatedMinutes: number;
+  roomsCount: number;
+  orderNumber: number;
 }

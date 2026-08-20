@@ -12,14 +12,15 @@ import {
   Server,
   Layers,
 } from "lucide-react";
-import { useMemo, useState } from "react";
-import { PRACTICE_CHALLENGES } from "@/lib/mock-data";
+import { useEffect, useMemo, useState } from "react";
+import { mapApiChallenge, type ApiChallenge } from "@/lib/challenges";
 import { PracticeHero } from "@/components/practice/PracticeHero";
 import { ChallengeCard } from "@/components/practice/ChallengeCard";
 import { RecommendedTargetBanner } from "@/components/practice/RecommendedTargetBanner";
-import type { ChallengeCategory, ChallengeDifficulty } from "@hackers-campus/shared-types";
+import type { ChallengeCategory, ChallengeDifficulty, PracticeChallenge } from "@hackers-campus/shared-types";
 
 export default function PracticePage() {
+  const [challenges, setChallenges] = useState<PracticeChallenge[]>([]);
   // Search & Filter States
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState<string>("all");
@@ -36,7 +37,7 @@ export default function PracticePage() {
 
   // Filter logic
   const filteredChallenges = useMemo(() => {
-    let result = [...PRACTICE_CHALLENGES];
+    let result = [...challenges];
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
@@ -79,27 +80,34 @@ export default function PracticePage() {
     }
 
     return result;
-  }, [searchQuery, selectedType, sortBy, selectedDifficulty, selectedStatus, selectedSubscription]);
+  }, [challenges, searchQuery, selectedType, sortBy, selectedDifficulty, selectedStatus, selectedSubscription]);
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api"}/practice/challenges`)
+      .then((response) => response.ok ? response.json() : [])
+      .then((data: ApiChallenge[]) => setChallenges(data.map(mapApiChallenge)))
+      .catch(() => setChallenges([]));
+  }, []);
 
   // Specific categorized lists for the standard landing view
   const recommendedItems = useMemo(() => {
-    const list = PRACTICE_CHALLENGES.filter((c) => c.slug !== "ai-threat-modelling");
+    const list = challenges;
     return showMoreRecommended ? list : list.slice(0, 4);
-  }, [showMoreRecommended]);
+  }, [challenges, showMoreRecommended]);
 
   const quick5MinHacks = useMemo(() => {
-    return PRACTICE_CHALLENGES.filter((c) => c.type === "quick" || c.estimatedMinutes <= 20).slice(0, 4);
-  }, []);
+    return challenges.filter((c) => c.type === "quick" || c.estimatedMinutes <= 20).slice(0, 4);
+  }, [challenges]);
 
   const webChallenges = useMemo(() => {
-    return PRACTICE_CHALLENGES.filter((c) => c.category === "Web Security").slice(0, 4);
-  }, []);
+    return challenges.filter((c) => c.category === "Web Security").slice(0, 4);
+  }, [challenges]);
 
   const adAndPrivescChallenges = useMemo(() => {
-    return PRACTICE_CHALLENGES.filter(
+    return challenges.filter(
       (c) => c.category === "Active Directory" || c.category === "Linux" || c.category === "Binary Exploitation"
     ).slice(0, 4);
-  }, []);
+  }, [challenges]);
 
   const isFiltering =
     searchQuery.trim() !== "" ||
@@ -123,14 +131,11 @@ export default function PracticePage() {
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 py-6">
         {/* 1. TryHackMe Style Practice Hero HUD with Segmented Meter & Cyber Mountain */}
         <PracticeHero
-          solvedCount={15}
-          totalCount={523}
-          easySolved={10}
-          easyTotal={188}
-          medSolved={5}
-          medTotal={231}
-          hardSolved={0}
-          hardTotal={104}
+          solvedCount={0}
+          totalCount={challenges.length}
+          easyTotal={challenges.filter((c) => c.difficulty === "Easy").length}
+          medTotal={challenges.filter((c) => c.difficulty === "Medium").length}
+          hardTotal={challenges.filter((c) => c.difficulty === "Hard" || c.difficulty === "Insane").length}
         />
 
         {/* 2. Search Bar & Dropdown Filters Bar */}

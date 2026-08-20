@@ -1,0 +1,17 @@
+room:
+  id: command-injection-01
+  title: Blind OS Command Injection
+  category: Web Security
+  difficulty: Medium
+  version: 1.0.0
+
+runtime:
+  type: docker
+
+resources:
+  cpu: 1
+  memory: 512m
+
+session:
+  max_minutes: 60
+  reset_allowed: true

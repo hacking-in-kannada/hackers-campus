@@ -6,7 +6,11 @@ import {
   ChevronDown,
   ChevronRight,
   Circle,
+  Code2,
   Copy,
+  Download,
+  FileCode,
+  ImageIcon,
   Lightbulb,
   Terminal,
   Zap,
@@ -17,7 +21,7 @@ export interface TaskQuestion {
   id: string;
   prompt: string;
   placeholder?: string;
-  correctAnswer: string;
+  correctAnswer?: string;
   hint?: string;
   xp?: number;
 }
@@ -30,6 +34,12 @@ export interface RoomTaskItem {
   content: {
     heading?: string;
     description: string;
+    htmlContent?: string;
+    imageAttachment?: {
+      name: string;
+      url: string;
+      size: string;
+    };
     codeSnippets?: Array<{ command: string; explanation: string }>;
     tipBox?: {
       title: string;
@@ -45,9 +55,10 @@ interface TaskAccordionProps {
   isOpen: boolean;
   onToggle: () => void;
   onQuestionSolved: (taskId: string, questionId: string) => void;
+  onQuestionCheck?: (taskId: string, questionId: string, answer: string) => Promise<boolean>;
 }
 
-export function TaskAccordion({ task, isOpen, onToggle, onQuestionSolved }: TaskAccordionProps) {
+export function TaskAccordion({ task, isOpen, onToggle, onQuestionSolved, onQuestionCheck }: TaskAccordionProps) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [questionResults, setQuestionResults] = useState<Record<string, "idle" | "correct" | "incorrect">>({});
   const [unlockedHints, setUnlockedHints] = useState<Record<string, boolean>>({});
@@ -61,13 +72,12 @@ export function TaskAccordion({ task, isOpen, onToggle, onQuestionSolved }: Task
     }
   };
 
-  const handleCheck = (q: TaskQuestion) => {
+  const handleCheck = async (q: TaskQuestion) => {
     const val = answers[q.id]?.trim() || "";
     if (!val) return;
-    const isMatch =
-      val === q.correctAnswer ||
-      val.toLowerCase() === q.correctAnswer.toLowerCase() ||
-      (q.correctAnswer.startsWith("HC{") && val.toLowerCase().includes(q.correctAnswer.toLowerCase()));
+    const isMatch = onQuestionCheck
+      ? await onQuestionCheck(task.id, q.id, val)
+      : Boolean(q.correctAnswer && (val === q.correctAnswer || val.toLowerCase() === q.correctAnswer.toLowerCase() || (q.correctAnswer.startsWith("HC{") && val.toLowerCase().includes(q.correctAnswer.toLowerCase()))));
 
     if (isMatch) {
       setQuestionResults((prev) => ({ ...prev, [q.id]: "correct" }));
@@ -130,10 +140,41 @@ export function TaskAccordion({ task, isOpen, onToggle, onQuestionSolved }: Task
             </div>
           )}
 
-          {/* Description */}
-          <p className="text-sm leading-7 text-slate-300 border-l-2 border-[#1E293B] pl-4">
-            {task.content.description}
-          </p>
+          {/* Description / HTML Content */}
+          {task.content.htmlContent ? (
+            <div
+              className="prose prose-invert max-w-none text-sm leading-7 text-slate-300 border-l-2 border-[#22C55E]/40 pl-4 space-y-2 [&_code]:rounded [&_code]:bg-[#070B0E] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-emerald-300 [&_pre]:rounded-lg [&_pre]:bg-[#070B0E] [&_pre]:p-3 [&_pre]:border [&_pre]:border-[#1E293B] [&_a]:text-emerald-400 [&_a]:underline [&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4"
+              dangerouslySetInnerHTML={{ __html: task.content.htmlContent }}
+            />
+          ) : (
+            <p className="text-sm leading-7 text-slate-300 border-l-2 border-[#1E293B] pl-4 whitespace-pre-wrap">
+              {task.content.description}
+            </p>
+          )}
+
+          {/* Attached Task Image / Diagram Download Card */}
+          {task.content.imageAttachment && (
+            <div className="rounded-xl border border-panelBorder bg-[#080E18] p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                  <ImageIcon size={20} />
+                </div>
+                <div>
+                  <p className="font-mono text-xs font-bold text-white">{task.content.imageAttachment.name}</p>
+                  <p className="font-mono text-[10px] text-slate-400">{task.content.imageAttachment.size} · Challenge Asset Attachment</p>
+                </div>
+              </div>
+
+              <a
+                href={task.content.imageAttachment.url}
+                download={task.content.imageAttachment.name}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1.5 font-mono text-xs font-bold text-emerald-400 hover:bg-emerald-500 hover:text-canvas transition"
+              >
+                <Download size={13} />
+                <span>Download Asset</span>
+              </a>
+            </div>
+          )}
 
           {/* Code Snippets — Terminal style */}
           {task.content.codeSnippets && task.content.codeSnippets.length > 0 && (
